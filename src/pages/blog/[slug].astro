@@ -1,0 +1,96 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import ArrowIcon from "@/components/ArrowIcon.astro";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  );
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev: i > 0 ? posts[i - 1] : null,
+      next: i < posts.length - 1 ? posts[i + 1] : null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+---
+
+<Layout title={`${post.data.title} — Anurag Bathani`} description={post.data.excerpt}>
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="mx-auto max-w-[760px] px-6 md:px-8">
+      {/* Back link */}
+      <Reveal>
+        <a
+          href="/blog"
+          class="group mb-8 inline-flex items-center gap-2 font-mono text-[12px] tracking-wide text-ink-400 transition-colors duration-300 hover:text-white"
+        >
+          <ArrowIcon dir="left" class="transition-transform duration-300 group-hover:-translate-x-1" />
+          Back to Blog
+        </a>
+      </Reveal>
+
+      {/* Header */}
+      <Reveal delay={0.1}>
+        <div class="mb-5 flex items-center gap-3">
+          <span class="rounded-full border border-white/[0.08] px-2.5 py-0.5 font-mono text-[10px] text-ink-400">
+            {post.data.category}
+          </span>
+          <span class="font-mono text-[11px] text-ink-500">
+            {fmtDate(post.data.date)}
+          </span>
+        </div>
+        <h1 class="mb-6 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          {post.data.title}
+        </h1>
+        <p class="mb-10 text-[15px] font-light leading-relaxed text-ink-300">
+          {post.data.excerpt}
+        </p>
+      </Reveal>
+
+      {/* Body — Astro-rendered markdown with Shiki code highlighting */}
+      <Reveal delay={0.2}>
+        <article class="prose-editorial">
+          <Content />
+        </article>
+      </Reveal>
+
+      {/* Prev / Next */}
+      <Reveal delay={0.1}>
+        <div class="mt-16 flex flex-col gap-4 border-t border-white/[0.06] pt-8 md:flex-row md:justify-between">
+          {
+            prev ? (
+              <a href={`/blog/${prev.id}/`} class="group flex items-center gap-3 text-ink-400 transition-colors duration-300 hover:text-white">
+                <ArrowIcon dir="left" class="transition-transform duration-300 group-hover:-translate-x-1" />
+                <span class="text-sm font-light">{prev.data.title}</span>
+              </a>
+            ) : (
+              <div />
+            )
+          }
+          {
+            next && (
+              <a href={`/blog/${next.id}/`} class="group flex items-center gap-3 text-right text-ink-400 transition-colors duration-300 hover:text-white">
+                <span class="text-sm font-light">{next.data.title}</span>
+                <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+            )
+          }
+        </div>
+      </Reveal>
+    </div>
+  </main>
+</Layout>

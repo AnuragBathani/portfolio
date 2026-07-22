@@ -1,0 +1,293 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import Marquee from "@/components/Marquee.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import ArrowIcon from "@/components/ArrowIcon.astro";
+import { profile, stats, projects, achievements, cves } from "@/data/content";
+import { md } from "@/lib/md";
+
+const featured = projects.slice(0, 3);
+const headline = ["Breaking systems", "to make them", "stronger."];
+
+// Severity → badge classes. Literal strings so Tailwind keeps them at build time.
+const severityBadge: Record<string, string> = {
+  High: "bg-red-500/15 text-red-400",
+  Medium: "bg-accent/15 text-accent-soft",
+  Low: "bg-term/15 text-term-soft",
+};
+---
+
+<Layout>
+  <main class="relative z-[2]">
+    {/* ===== HERO — asymmetric, editorial, no shader ===== */}
+    <section class="relative overflow-hidden">
+      {/* one soft amber glow, top-left, very low opacity (grain comes from body::before) */}
+      <div
+        class="pointer-events-none absolute -left-[10%] -top-[10%] h-[520px] w-[520px] rounded-full opacity-[0.06] blur-[120px]"
+        style="background: radial-gradient(circle, var(--accent), transparent 70%)"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="container-x grid min-h-[88vh] items-center gap-12 pt-28 lg:grid-cols-[1.5fr_1fr]">
+        <div>
+          <Reveal>
+            <p class="shell-prompt mb-3">
+              <span class="dim">~/anurag</span> $ whoami
+            </p>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <span class="eyebrow mb-7 block">{profile.role}</span>
+          </Reveal>
+
+          <h1 class="font-serif text-display-xl font-medium leading-[1.04] text-balance">
+            {
+              headline.map((line, i) => (
+                <Reveal delay={0.1 + i * 0.08}>
+                  <span
+                    class:list={[
+                      "block",
+                      i === 1 && "italic font-light text-ink-200",
+                    ]}
+                  >
+                    {line}
+                    {i === headline.length - 1 && (
+                      <span class="term-cursor" aria-hidden="true" />
+                    )}
+                  </span>
+                </Reveal>
+              ))
+            }
+          </h1>
+
+          <Reveal delay={0.4}>
+            <p class="lead mt-8 max-w-[46ch] text-[15px] font-light leading-relaxed text-ink-300">
+              {profile.subtitle}
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.5}>
+            <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="/projects"
+                class="btn-lift group inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-[13px] font-medium text-black transition-all duration-300 hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
+              >
+                <span>Explore Work</span>
+                <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+              <a
+                href="/contact"
+                class="btn-lift inline-flex items-center justify-center rounded-full border border-white/10 px-6 py-3 text-[13px] font-medium text-white transition-all duration-300 hover:border-white/30 hover:bg-white/[0.02]"
+              >
+                Get in Touch
+              </a>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Right column: a quiet "card" of identity signals */}
+        <Reveal delay={0.3} class="hidden lg:block">
+          <div class="ml-auto max-w-[300px] border-l border-white/[0.08] pl-8">
+            <p class="mb-6 font-serif text-lg italic leading-snug text-ink-200">
+              Security engineer at the intersection of offense, infrastructure,
+              and intent.
+            </p>
+            <dl class="space-y-4 text-[13px]">
+              <div>
+                <dt class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-500">Based in</dt>
+                <dd class="mt-0.5 text-ink-200">Ahmedabad, Gujarat</dd>
+              </div>
+              <div>
+                <dt class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-500">Role</dt>
+                <dd class="mt-0.5 text-ink-200">Jr. Cybersecurity Engineer</dd>
+              </div>
+              <div>
+                <dt class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-500">Focus</dt>
+                <dd class="mt-0.5 text-ink-200">Pentesting · API security · DevSecOps</dd>
+              </div>
+            </dl>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+
+    {/* ===== BRIEF INTRO + STATS ===== */}
+    <section class="container-x py-24">
+      <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
+        <div>
+          <Reveal>
+            <p
+              class="mb-5 font-serif text-xl font-normal leading-snug tracking-tight text-ink-100 md:text-[1.35rem]"
+              set:html={md("A *Jr. Cybersecurity Engineer* blending offensive security expertise with software engineering to build resilient systems.")}
+            />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p class="lead mb-6 max-w-[52ch] text-[14px] font-light leading-[1.8] text-ink-300">
+              From penetration testing and API security to Kubernetes policy
+              enforcement, I work at the intersection of security and
+              infrastructure.
+            </p>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <a
+              href="/about"
+              class="link-underline group inline-flex items-center gap-2 font-mono text-[12px] tracking-wide text-ink-300 transition-colors duration-300 hover:text-white"
+            >
+              Learn more about me
+              <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+          </Reveal>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 self-start">
+          {
+            stats.map((s, i) => (
+              <Reveal delay={0.1 + i * 0.08}>
+                <div class="card-surface group relative overflow-hidden rounded-2xl p-5 transition-transform duration-500 hover:-translate-y-0.5">
+                  <span class="tabular-nums font-serif text-[1.75rem] font-medium leading-none tracking-tight text-white">
+                    {s.value}
+                  </span>
+                  <span class="ml-0.5 font-serif text-base italic text-accent-soft">{s.suffix}</span>
+                  <span class="mt-2 block text-[11px] font-light leading-relaxed text-ink-400">{s.label}</span>
+                </div>
+              </Reveal>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <Marquee />
+
+    {/* ===== FEATURED PROJECTS ===== */}
+    <section class="container-x py-28">
+      <Reveal>
+        <div class="mb-8 flex items-end justify-between">
+          <SectionHeader eyebrow="Featured" title="Projects" class="mb-0" />
+          <a
+            href="/projects"
+            class="link-underline group hidden items-center gap-2 font-mono text-[12px] tracking-wide text-ink-300 transition-colors duration-300 hover:text-white sm:inline-flex"
+          >
+            View all
+            <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+          </a>
+        </div>
+      </Reveal>
+
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-spotlight-grid>
+        {
+          featured.map((p, i) => (
+            <Reveal delay={i * 0.08}>
+              <ProjectCard project={p} />
+            </Reveal>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* ===== ACHIEVEMENTS STRIP ===== */}
+    <section class="container-x py-20">
+      <Reveal>
+        <SectionHeader eyebrow="Recognition" title="Achievements" />
+      </Reveal>
+
+      {/* CVE highlight cards */}
+      <div class="mb-4 grid gap-4 lg:grid-cols-3">
+        {
+          cves.map((cve, i) => (
+            <Reveal delay={i * 0.08}>
+              <a
+                href={cve.post ?? cve.advisoryUrl}
+                class="card-surface group flex h-full flex-col rounded-2xl p-6 transition-transform duration-500 hover:-translate-y-0.5"
+              >
+                <div class="mb-3 flex flex-wrap items-center gap-2">
+                  <span class={`inline-block rounded-full px-2.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider ${severityBadge[cve.severity] ?? severityBadge.High}`}>
+                    {cve.severity} — CVSS {cve.cvss}
+                  </span>
+                  <span class="font-mono text-[11px] text-ink-400">{cve.cveId}</span>
+                </div>
+                <h4 class="mb-2 font-serif text-base font-medium tracking-tight text-white transition-colors duration-300 group-hover:text-accent-soft">
+                  {cve.title}
+                </h4>
+                <p class="text-[13px] font-light leading-relaxed text-ink-300" set:html={md(cve.description)} />
+                <div class="mt-4 flex items-center gap-2 pt-3 font-mono text-[11px] text-ink-400">
+                  <span class="truncate">{cve.package}</span>
+                  {cve.stars && (
+                    <span class="inline-flex shrink-0 items-center gap-1 text-accent-soft" title={`${cve.stars} GitHub stars`}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      {cve.stars}
+                    </span>
+                  )}
+                </div>
+              </a>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          achievements.map((a, i) => (
+            <Reveal delay={i * 0.08}>
+              <div class="card-surface rounded-2xl p-6 transition-transform duration-500 hover:-translate-y-0.5">
+                <h4 class="mb-2 font-serif text-base font-medium tracking-tight text-white">{a.title}</h4>
+                <p class="text-[13px] font-light leading-relaxed text-ink-300" set:html={md(a.description)} />
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      <Reveal delay={0.3}>
+        <div class="mt-6">
+          <a
+            href="/publications"
+            class="link-underline group inline-flex items-center gap-2 font-mono text-[12px] tracking-wide text-ink-300 transition-colors duration-300 hover:text-white"
+          >
+            View all achievements &amp; publications
+            <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+          </a>
+        </div>
+      </Reveal>
+    </section>
+
+    {/* ===== CTA ===== */}
+    <section class="container-x py-28 text-center">
+      <Reveal>
+        <h2 class="mb-4 font-serif text-display-md font-medium tracking-tight text-balance text-white">
+          Let&apos;s work together.
+        </h2>
+      </Reveal>
+      <Reveal delay={0.1}>
+        <p class="lead mx-auto mb-6 max-w-[440px] text-[15px] font-light leading-relaxed text-ink-300">
+          Have a security challenge, an interesting project, or just want to
+          talk shop?
+        </p>
+      </Reveal>
+      <Reveal delay={0.2}>
+        <a
+          href="/contact"
+          class="btn-lift group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[13px] font-medium text-black transition-all duration-300 hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
+        >
+          <span>Get in Touch</span>
+          <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+        </a>
+      </Reveal>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Card spotlight mouse-follow for the featured project grid.
+  document.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((card) => {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    });
+  });
+</script>

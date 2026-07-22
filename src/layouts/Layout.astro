@@ -1,0 +1,104 @@
+---
+import BaseHead from "@/components/BaseHead.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import { profile } from "@/data/content";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = `${profile.name} — Cybersecurity Engineer`,
+  description = profile.subtitle,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body>
+    <Nav />
+    <slot />
+    <Footer />
+
+    <script>
+      // ---- Global motion script: page fade + scroll reveals + anchor offset.
+      // Replaces the old MotionInit + Reveal + SmoothScroll components.
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      function init() {
+        const reveals = Array.from(
+          document.querySelectorAll<HTMLElement>(".reveal")
+        );
+
+        if (reduce) {
+          // No motion: show everything immediately.
+          reveals.forEach((el) => el.classList.add("instant", "is-revealed"));
+          document.body.classList.add("ready");
+          return;
+        }
+
+        // Above-the-fold elements reveal instantly (no scroll-in needed).
+        const fold = window.innerHeight * 0.85;
+        reveals.forEach((el) => {
+          if (el.getBoundingClientRect().top < fold) {
+            el.classList.add("instant", "is-revealed");
+          }
+        });
+
+        // Everything else reveals on scroll via a single shared observer.
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-revealed");
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -10% 0px" }
+        );
+        reveals
+          .filter((el) => !el.classList.contains("is-revealed"))
+          .forEach((el) => io.observe(el));
+
+        document.body.classList.add("ready");
+      }
+
+      // Wait for fonts so the fade-in doesn't flash unstyled text.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(init);
+        // Safety fallback if fonts.ready stalls.
+        setTimeout(() => {
+          if (!document.body.classList.contains("ready")) init();
+        }, 1200);
+      } else {
+        init();
+      }
+
+      // Anchor links: smooth scroll with a fixed-nav offset.
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(
+        (a) => {
+          a.addEventListener("click", (e) => {
+            const id = a.getAttribute("href")!.slice(1);
+            if (!id) return;
+            const target = document.getElementById(id);
+            if (!target) return;
+            e.preventDefault();
+            const top =
+              target.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({
+              top,
+              behavior: reduce ? "auto" : "smooth",
+            });
+          });
+        }
+      );
+    </script>
+  </body>
+</html>

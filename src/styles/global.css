@@ -1,0 +1,513 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   ANURAG BATHANI — PORTFOLIO
+   Calm, editorial dark theme. One restrained signal-amber accent.
+   Motion is purposeful: scroll reveals + subtle hovers only.
+   ========================================================================== */
+
+:root {
+  /* Typeface variables — wired to @fontsource imports in BaseHead */
+  --font-inter: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-playfair: "Playfair Display", Georgia, serif;
+  --font-jetbrains: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Surfaces */
+  --bg: #08080a;
+  --hairline: rgba(255, 255, 255, 0.06);
+  --hairline-strong: rgba(255, 255, 255, 0.12);
+
+  /* One accent, used sparingly */
+  --accent: #d9a23f;
+  --accent-soft: #e7be6e;
+
+  /* Secondary terminal-green — security flavor in coded spots only */
+  --term: #3ddc84;
+  --term-soft: #6ef0a6;
+
+  /* Shared content measure — unified across nav, content, footer */
+  --container: 1080px;
+
+  /* Motion tokens */
+  --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --dur-fast: 240ms;
+  --dur-base: 420ms;
+  --dur-slow: 720ms;
+  --dur-reveal: 900ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  /* Default body text is softened — true #fff is reserved for emphasis. */
+  color: #b8b8bf;
+  font-family: var(--font-inter);
+  line-height: 1.6;
+  overflow-x: clip;
+}
+/* Page fades in once fonts are ready (body.ready added by global script).
+   JS-gated so no-JS users / crawlers never see a blank (opacity:0) page. */
+.js body {
+  opacity: 0;
+  transition: opacity 500ms var(--ease-silk);
+}
+.js body.ready {
+  opacity: 1;
+}
+
+/* Faint film grain over the whole page — warms the flat near-black.
+   Pure CSS (SVG fractal noise data-uri), no extra request. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Tabular numerals so counters/stats don't reflow */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ---- Focus ring (accent, accessible) ---- */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---- Shared container width ---- */
+.container-x {
+  margin-inline: auto;
+  max-width: var(--container);
+  padding-inline: 1.5rem;
+}
+@media (min-width: 768px) {
+  .container-x {
+    padding-inline: 2rem;
+  }
+}
+
+/* ---- Typography helpers ---- */
+.text-balance {
+  text-wrap: balance;
+}
+.lead {
+  text-wrap: pretty;
+}
+
+/* ---- Eyebrow label with leading accent tick ---- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-jetbrains);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #8a8a93;
+}
+.eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  flex: none;
+}
+
+/* ---- Terminal shell prompt (hacker flavor, green) ---- */
+.shell-prompt {
+  font-family: var(--font-jetbrains);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--term);
+}
+.shell-prompt .dim {
+  color: var(--term-dim, #1f8f54);
+  opacity: 0.85;
+}
+
+/* ---- Blinking terminal cursor (after the hero headline) ---- */
+@keyframes termBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.term-cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.92em;
+  margin-left: 0.06em;
+  vertical-align: -0.06em;
+  background: var(--term);
+  box-shadow: 0 0 10px rgba(61, 220, 132, 0.5);
+  animation: termBlink 1.05s step-end infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .term-cursor { animation: none; opacity: 0.9; }
+}
+
+/* ---- Card surface ---- */
+.card-surface {
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid var(--hairline);
+  transition:
+    border-color var(--dur-base) var(--ease-silk),
+    transform var(--dur-base) var(--ease-silk),
+    background-color var(--dur-base) var(--ease-silk);
+  will-change: transform;
+}
+.card-surface:hover {
+  border-color: var(--hairline-strong);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* ---- Project-card spotlight (GPU, subtle) ---- */
+.card-spotlight {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.card-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.05),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-silk);
+  pointer-events: none;
+  z-index: 0;
+}
+.card-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+.card-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* One signature micro-interaction: a 1px top rule wipes in amber on hover. */
+.card-rule {
+  position: relative;
+}
+.card-rule::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-silk);
+}
+.card-rule:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---- Reveal system — single consistent curve, optional --r-delay ----
+   Progressive enhancement: the hidden state ONLY applies when JS is active
+   (html.js, set by an inline head script). No-JS users and crawlers see
+   fully-visible content — content is never hidden behind a script that
+   might not run. */
+.js .reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-silk) var(--r-delay, 0ms),
+    transform var(--dur-reveal) var(--ease-silk) var(--r-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+/* Above-the-fold elements reveal instantly on first paint (no scroll needed). */
+.reveal.instant {
+  transition-duration: 0ms;
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Button / link hover polish ---- */
+.btn-lift {
+  transition:
+    transform var(--dur-base) var(--ease-silk),
+    box-shadow var(--dur-base) var(--ease-silk),
+    background-color var(--dur-base) var(--ease-silk),
+    border-color var(--dur-base) var(--ease-silk),
+    color var(--dur-base) var(--ease-silk);
+  will-change: transform;
+}
+.btn-lift:hover {
+  transform: translateY(-2px);
+}
+.btn-lift:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 120ms;
+}
+
+/* ---- The shared accent underline — one interaction, used everywhere ---- */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-silk);
+}
+.link-underline:hover::after,
+.link-underline.is-active::after {
+  transform: scaleX(1);
+}
+
+/* ---- Editorial hairline rule (section headers) ---- */
+.hairline-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--hairline-strong),
+    transparent 85%
+  );
+}
+
+/* ---- Skill tile ---- */
+.skill-tile {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.015);
+  transition:
+    transform var(--dur-base) var(--ease-silk),
+    border-color var(--dur-base) var(--ease-silk),
+    background-color var(--dur-base) var(--ease-silk),
+    box-shadow var(--dur-base) var(--ease-silk);
+  will-change: transform;
+}
+.skill-tile:hover {
+  transform: translateY(-5px);
+  border-color: rgba(217, 162, 63, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Marquee (CSS, seamless via 50% translation). No pulse highlight. ---- */
+@keyframes marqueeFlow {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee-flow {
+  animation: marqueeFlow 60s linear infinite;
+  will-change: transform;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ==========================================================================
+   PROSE — editorial styling for rendered blog markdown (<Content />)
+   ========================================================================== */
+.prose-editorial {
+  color: #b8b8bf;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.85;
+}
+.prose-editorial > * + * {
+  margin-top: 1.25rem;
+}
+.prose-editorial h2 {
+  font-family: var(--font-playfair);
+  font-weight: 500;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: #fff;
+  margin-top: 2.75rem;
+  text-wrap: balance;
+}
+.prose-editorial h3 {
+  font-family: var(--font-playfair);
+  font-weight: 500;
+  font-size: 1.2rem;
+  color: #fff;
+  margin-top: 2rem;
+}
+.prose-editorial p {
+  color: #b8b8bf;
+}
+/* Larger lead first paragraph — editorial drop-in. */
+.prose-editorial > p:first-of-type {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #d4d4d8;
+}
+.prose-editorial strong {
+  color: #fff;
+  font-weight: 500;
+}
+.prose-editorial em {
+  font-style: italic;
+}
+.prose-editorial a {
+  color: #e7e7ea;
+  text-decoration: underline;
+  text-decoration-color: rgba(217, 162, 63, 0.45);
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--dur-base) var(--ease-silk),
+    color var(--dur-base) var(--ease-silk);
+}
+.prose-editorial a:hover {
+  color: #fff;
+  text-decoration-color: var(--accent);
+}
+.prose-editorial ul,
+.prose-editorial ol {
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.prose-editorial ul {
+  list-style: disc;
+}
+.prose-editorial ol {
+  list-style: decimal;
+}
+.prose-editorial li::marker {
+  color: var(--accent);
+}
+.prose-editorial blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.25rem;
+  margin-block: 1.75rem;
+  font-family: var(--font-playfair);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: #d4d4d8;
+}
+.prose-editorial blockquote p {
+  color: inherit;
+}
+/* Inline code */
+.prose-editorial :not(pre) > code {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 0.12em 0.4em;
+  font-family: var(--font-jetbrains);
+  font-size: 0.85em;
+  color: var(--accent-soft);
+}
+/* Shiki code block in a hairline card */
+.prose-editorial pre {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-block: 1.5rem;
+}
+.prose-editorial pre code {
+  font-family: var(--font-jetbrains);
+}
+.prose-editorial hr {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin-block: 2.5rem;
+}
+.prose-editorial table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 1.75rem;
+  font-size: 13px;
+}
+.prose-editorial th,
+.prose-editorial td {
+  text-align: left;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--hairline);
+}
+.prose-editorial th {
+  font-family: var(--font-jetbrains);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a8a93;
+  font-weight: 400;
+}
+
+/* ---- Reduce motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

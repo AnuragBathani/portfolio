@@ -1,0 +1,144 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import ArrowIcon from "@/components/ArrowIcon.astro";
+import { publication, cves, achievements } from "@/data/content";
+import { md } from "@/lib/md";
+
+// Inline achievement icons keyed by `icon` field.
+const icons: Record<string, string> = {
+  book: `<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>`,
+  star: `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+  award: `<path d="M6 9a6 6 0 0 0 12 0V3H6v6z"/><path d="M6 3H4a2 2 0 0 0-2 2v2a4 4 0 0 0 4 4"/><path d="M18 3h2a2 2 0 0 1 2 2v2a4 4 0 0 1-4 4"/><path d="M9 15l-1 6 4-2.5L16 21l-1-6"/>`,
+};
+
+// Severity → badge classes. Literal strings so Tailwind keeps them at build time.
+const severityBadge: Record<string, string> = {
+  High: "bg-red-500/15 text-red-400",
+  Medium: "bg-accent/15 text-accent-soft",
+  Low: "bg-term/15 text-term-soft",
+};
+---
+
+<Layout title="Achievements — Anurag Bathani" description="Published research, security advisories, and achievements of Anurag Bathani.">
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="container-x">
+      <Reveal>
+        <span class="eyebrow mb-4 block">05 — Publications &amp; Achievements</span>
+        <h1 class="mb-12 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          Achievements
+        </h1>
+      </Reveal>
+
+      {/* Published Research */}
+      <Reveal delay={0.1}>
+        <div class="card-surface relative mb-6 overflow-hidden rounded-2xl p-7 md:p-9">
+          <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"></span>
+          <span class="mb-7 inline-block rounded-full border border-white/[0.12] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-ink-200">
+            Published Research
+          </span>
+          <h2 class="mb-4 font-serif text-[1.75rem] font-medium leading-tight tracking-tight text-white">
+            {publication.title}
+          </h2>
+          <p class="mb-3 text-[15px] font-light text-ink-300" set:html={md(publication.authors)}></p>
+          <p class="mb-6 text-sm font-light leading-relaxed text-ink-400">
+            <span set:html={md(publication.journal)}></span>
+            <br />
+            {publication.issn}
+          </p>
+          <a
+            href={publication.doiUrl}
+            target="_blank"
+            rel="noopener"
+            class="link-underline group inline-flex items-center gap-2 font-mono text-xs tracking-wide text-ink-300 transition-colors duration-500 hover:text-white"
+          >
+            DOI: {publication.doi}
+            <ArrowIcon dir="out" class="h-3 w-3 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+        </div>
+      </Reveal>
+
+      {/* CVEs / Security Advisories */}
+      {
+        cves.map((cve, i) => (
+          <Reveal delay={0.15 + i * 0.05}>
+            <div class="card-surface relative mb-6 overflow-hidden rounded-2xl p-7 md:p-9">
+              <span class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"></span>
+              <div class="mb-7 flex flex-wrap items-center gap-3">
+                <span class="inline-block rounded-full border border-white/[0.12] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-ink-200">
+                  Security Advisory
+                </span>
+                <span class={`inline-block rounded-full px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-wider ${severityBadge[cve.severity] ?? severityBadge.High}`}>
+                  {cve.severity} — CVSS {cve.cvss}
+                </span>
+              </div>
+              <h2 class="mb-4 font-serif text-[1.75rem] font-medium leading-tight tracking-tight text-white">
+                {cve.title}
+              </h2>
+              <p class="mb-4 text-[15px] font-light leading-relaxed text-ink-300" set:html={md(cve.description)} />
+              <div class="mb-6 flex flex-col gap-1.5 text-sm font-light text-ink-400">
+                <span><span class="text-ink-300">CVE:</span> {cve.cveId}</span>
+                <span class="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span><span class="text-ink-300">Package:</span> {cve.package}</span>
+                  {cve.stars && (
+                    <span class="inline-flex items-center gap-1 text-accent-soft" title={`${cve.stars} GitHub stars`}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      {cve.stars}
+                    </span>
+                  )}
+                </span>
+                <span><span class="text-ink-300">Weakness:</span> {cve.weakness}</span>
+                <span>
+                  <span class="text-ink-300">Affected:</span> {cve.affected} &nbsp;→&nbsp;
+                  <span class="text-ink-300">Patched:</span> {cve.patched}
+                </span>
+              </div>
+              <div class="flex flex-wrap items-center gap-x-7 gap-y-3">
+                <a
+                  href={cve.advisoryUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="link-underline group inline-flex items-center gap-2 font-mono text-xs tracking-wide text-ink-300 transition-colors duration-500 hover:text-white"
+                >
+                  {cve.ghsaId}
+                  <ArrowIcon dir="out" class="h-3 w-3 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </a>
+                {cve.post && (
+                  <a
+                    href={cve.post}
+                    class="link-underline group inline-flex items-center gap-2 font-mono text-xs tracking-wide text-ink-300 transition-colors duration-500 hover:text-white"
+                  >
+                    Read the story
+                    <ArrowIcon class="h-3 w-3 transition-transform duration-500 group-hover:translate-x-0.5" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        ))
+      }
+      <div class="mb-10"></div>
+
+      {/* Achievements */}
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          achievements.map((a, i) => (
+            <Reveal delay={0.15 + i * 0.08}>
+              <div class="card-surface h-full rounded-2xl p-6 transition-transform duration-500 hover:-translate-y-1">
+                <div class="mb-5 text-accent/80">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" set:html={icons[a.icon]} />
+                </div>
+                <h3 class="mb-2.5 font-serif text-xl font-medium tracking-tight text-white">
+                  {a.title}
+                </h3>
+                <p class="text-sm font-light leading-relaxed text-ink-300" set:html={md(a.description)} />
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,151 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import ArrowIcon from "@/components/ArrowIcon.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const categories = [...new Set(posts.map((p) => p.data.category))];
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+---
+
+<Layout title="Writing — Anurag Bathani" description="Security writeups, tool deep-dives, and lessons from real-world pentesting and DevSecOps work.">
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="container-x">
+      <Reveal>
+        <span class="eyebrow mb-4 block">Blog</span>
+        <h1 class="mb-4 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          Writing
+        </h1>
+        <p class="lead mb-10 max-w-[60ch] text-[15px] font-light leading-relaxed text-ink-300">
+          Security writeups, tool deep-dives, and lessons learned from
+          real-world pentesting and DevSecOps work.
+        </p>
+      </Reveal>
+
+      {
+        posts.length > 0 ? (
+          <>
+            {/* Category filters — wired up via the script below */}
+            <Reveal delay={0.1}>
+              <div id="blog-filters" class="mb-12 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  data-filter="all"
+                  class="filter-chip is-active rounded-full border px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition-colors duration-300"
+                >
+                  All
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    type="button"
+                    data-filter={cat}
+                    class="filter-chip rounded-full border px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition-colors duration-300"
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </Reveal>
+
+            {/* Posts as editorial journal rows, hairline-separated */}
+            <div id="blog-list" class="border-t border-white/[0.06]">
+              {posts.map((post, i) => (
+                <Reveal delay={0.05 + i * 0.06}>
+                  <a
+                    href={`/blog/${post.id}/`}
+                    class="post-row group grid gap-3 border-b border-white/[0.06] py-7 transition-colors duration-300 md:grid-cols-[140px_1fr_auto] md:items-baseline md:gap-8"
+                    data-category={post.data.category}
+                  >
+                    <span class="font-mono text-[12px] text-ink-500">
+                      {fmtDate(post.data.date)}
+                    </span>
+                    <div>
+                      <span class="mb-2 inline-block rounded-full border border-white/[0.08] px-2.5 py-0.5 font-mono text-[10px] text-ink-400">
+                        {post.data.category}
+                      </span>
+                      <h2 class="mb-2 font-serif text-xl font-medium tracking-tight text-ink-100 transition-colors duration-300 group-hover:text-accent-soft">
+                        {post.data.title}
+                      </h2>
+                      <p class="max-w-[68ch] text-sm font-light leading-relaxed text-ink-400">
+                        {post.data.excerpt}
+                      </p>
+                    </div>
+                    <ArrowIcon class="mt-1 hidden shrink-0 text-ink-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent md:block" />
+                  </a>
+                </Reveal>
+              ))}
+            </div>
+            <p id="blog-empty" class="hidden py-16 text-center font-mono text-sm text-ink-500">
+              No posts in this category yet.
+            </p>
+          </>
+        ) : (
+          <Reveal delay={0.1}>
+            <div class="card-surface flex flex-col items-center rounded-2xl px-6 py-20 text-center">
+              <svg class="mb-6 text-ink-500" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+              <h2 class="mb-3 font-serif text-2xl font-medium tracking-tight text-white">Coming Soon</h2>
+              <p class="max-w-[420px] text-sm font-light leading-relaxed text-ink-400">
+                I&apos;m working on articles about pentesting, DevSecOps, and
+                security engineering. Check back soon for writeups and deep-dives.
+              </p>
+            </div>
+          </Reveal>
+        )
+      }
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .filter-chip {
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #55555c;
+  }
+  .filter-chip:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #b8b8bf;
+  }
+  .filter-chip.is-active {
+    border-color: rgba(217, 162, 63, 0.5);
+    background: rgba(217, 162, 63, 0.1);
+    color: var(--accent-soft);
+  }
+  .post-row.is-hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  // Category filter — toggle chip + show/hide rows.
+  const chips = document.querySelectorAll<HTMLButtonElement>(".filter-chip");
+  const rows = document.querySelectorAll<HTMLElement>(".post-row");
+  const empty = document.getElementById("blog-empty");
+
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const filter = chip.dataset.filter!;
+      chips.forEach((c) => c.classList.toggle("is-active", c === chip));
+
+      let visible = 0;
+      rows.forEach((row) => {
+        const match = filter === "all" || row.dataset.category === filter;
+        // The Reveal wrapper is the row's parent; hiding the row is enough.
+        row.classList.toggle("is-hidden", !match);
+        if (match) visible++;
+      });
+      empty?.classList.toggle("hidden", visible !== 0);
+    });
+  });
+</script>

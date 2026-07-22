@@ -1,0 +1,161 @@
+---
+import { profile } from "@/data/content";
+
+const links = [
+  { href: "/about", label: "About" },
+  { href: "/experience", label: "Experience" },
+  { href: "/projects", label: "Projects" },
+  { href: "/blog", label: "Blog" },
+  { href: "/skills", label: "Skills" },
+  { href: "/publications", label: "Achievements" },
+  { href: "/resources", label: "Resources" },
+];
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) =>
+  pathname === href || pathname.startsWith(href + "/");
+---
+
+<nav
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-[100] border-b border-transparent bg-ink-950/50 backdrop-blur-md transition-[background-color,border-color,backdrop-filter] duration-500 ease-silk"
+>
+  <div
+    id="nav-inner"
+    class="container-x flex items-center justify-between py-5 transition-[padding] duration-500 ease-silk"
+  >
+    <a href="/" class="font-serif text-xl italic tracking-wide text-white">
+      {profile.initials}
+    </a>
+
+    <div class="hidden items-center gap-7 lg:flex">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class:list={[
+              "link-underline py-1 text-[13px] font-light tracking-wide transition-colors duration-500 ease-silk",
+              isActive(l.href) ? "is-active text-white" : "text-ink-300 hover:text-white",
+            ]}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+      <a
+        href="/contact"
+        class="btn-lift rounded-full bg-white px-5 py-2.5 text-[13px] font-medium text-black"
+      >
+        Get in Touch
+      </a>
+    </div>
+
+    <button
+      id="nav-toggle"
+      class="flex flex-col gap-[5px] p-1 lg:hidden"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <span class="nav-bar block h-[1.5px] w-6 bg-white transition-transform duration-300"></span>
+      <span class="nav-bar-mid block h-[1.5px] w-6 bg-white transition-opacity duration-200"></span>
+      <span class="nav-bar block h-[1.5px] w-6 bg-white transition-transform duration-300"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile overlay — visibility/opacity toggled via .open class (CSS only) -->
+<div
+  id="nav-overlay"
+  class="invisible fixed inset-0 z-[99] flex flex-col items-center justify-center gap-7 bg-ink-950/95 opacity-0 backdrop-blur-xl transition-opacity duration-500 ease-silk lg:hidden"
+>
+  {
+    [...links, { href: "/contact", label: "Contact" }].map((l) => (
+      <a
+        href={l.href}
+        class:list={[
+          "font-serif text-4xl tracking-tight transition-colors duration-300 hover:text-white",
+          isActive(l.href) ? "text-white" : "text-ink-200",
+        ]}
+      >
+        {l.label}
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  /* Hamburger → X */
+  #nav-toggle[aria-expanded="true"] .nav-bar:first-child {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  #nav-toggle[aria-expanded="true"] .nav-bar:last-child {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+  #nav-toggle[aria-expanded="true"] .nav-bar-mid {
+    opacity: 0;
+  }
+  /* Overlay open state */
+  #nav-overlay.open {
+    visibility: visible;
+    opacity: 1;
+  }
+  /* Staggered fade-in of overlay links */
+  #nav-overlay a {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.5s var(--ease-silk),
+      transform 0.5s var(--ease-silk);
+  }
+  #nav-overlay.open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #nav-overlay.open a:nth-child(1) { transition-delay: 0.08s; }
+  #nav-overlay.open a:nth-child(2) { transition-delay: 0.14s; }
+  #nav-overlay.open a:nth-child(3) { transition-delay: 0.2s; }
+  #nav-overlay.open a:nth-child(4) { transition-delay: 0.26s; }
+  #nav-overlay.open a:nth-child(5) { transition-delay: 0.32s; }
+  #nav-overlay.open a:nth-child(6) { transition-delay: 0.38s; }
+  #nav-overlay.open a:nth-child(7) { transition-delay: 0.44s; }
+  #nav-overlay.open a:nth-child(8) { transition-delay: 0.5s; }
+</style>
+
+<script>
+  // Scrolled state (rAF-throttled, 40px threshold)
+  const nav = document.getElementById("site-nav");
+  const inner = document.getElementById("nav-inner");
+  let raf = 0;
+  const onScroll = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      const scrolled = window.scrollY > 40;
+      nav?.classList.toggle("border-white/[0.06]", scrolled);
+      nav?.classList.toggle("bg-ink-950/70", scrolled);
+      nav?.classList.toggle("backdrop-blur-xl", scrolled);
+      nav?.classList.toggle("bg-ink-950/50", !scrolled);
+      nav?.classList.toggle("backdrop-blur-md", !scrolled);
+      inner?.classList.toggle("py-3", scrolled);
+      inner?.classList.toggle("py-5", !scrolled);
+      raf = 0;
+    });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu toggle
+  const toggle = document.getElementById("nav-toggle");
+  const overlay = document.getElementById("nav-overlay");
+  const setOpen = (open: boolean) => {
+    overlay?.classList.toggle("open", open);
+    toggle?.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  toggle?.addEventListener("click", () =>
+    setOpen(toggle.getAttribute("aria-expanded") !== "true")
+  );
+  // Close when a link is tapped
+  overlay?.querySelectorAll("a").forEach((a) =>
+    a.addEventListener("click", () => setOpen(false))
+  );
+</script>

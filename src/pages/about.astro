@@ -1,0 +1,128 @@
+---
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import profileImg from "@/assets/profile.jpg";
+import { profile, about, stats } from "@/data/content";
+
+const sections = [
+  { label: "Philosophy", body: about.philosophy },
+  { label: "Background", body: about.background },
+  { label: "Currently", body: about.currently },
+  { label: "Interests", body: about.interests },
+];
+---
+
+<Layout title="About — Anurag Bathani" description="About Anurag Bathani — a Jr. Cybersecurity Engineer working at the intersection of security and infrastructure.">
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="container-x">
+      <Reveal>
+        <span class="eyebrow mb-3 block">01 — About</span>
+        <h1 class="mb-12 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          About Me
+        </h1>
+      </Reveal>
+
+      {/* Profile + Intro */}
+      <div class="mb-16 grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-14">
+        <Reveal delay={0.1}>
+          <div class="relative mx-auto w-full max-w-[240px] lg:mx-0">
+            <div class="aspect-square overflow-hidden rounded-2xl border border-white/[0.06] bg-ink-900">
+              <Image
+                src={profileImg}
+                alt={profile.name}
+                width={480}
+                height={480}
+                class="h-full w-full object-cover"
+                loading="eager"
+              />
+            </div>
+            <div class="mt-5 text-center lg:text-left">
+              <h2 class="font-serif text-lg font-medium tracking-tight text-white">
+                {profile.name}
+              </h2>
+              <p class="mt-1 font-mono text-[12px] text-accent-soft">
+                {profile.role}
+              </p>
+              <div class="mt-3 flex items-center justify-center gap-3.5 lg:justify-start">
+                <a href={profile.github} target="_blank" rel="noopener" aria-label="GitHub" class="text-ink-400 transition-colors hover:text-white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+                </a>
+                <a href={profile.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" class="text-ink-400 transition-colors hover:text-white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+                </a>
+                <a href={`mailto:${profile.email}`} aria-label="Email" class="text-ink-400 transition-colors hover:text-white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        <div>
+          {
+            sections.map((s, i) => (
+              <Reveal delay={0.15 + i * 0.05}>
+                <h3 class="eyebrow mb-3">{s.label}</h3>
+                <p class="mb-8 text-[15px] font-light leading-[1.85] text-ink-200">
+                  {s.body}
+                </p>
+              </Reveal>
+            ))
+          }
+        </div>
+      </div>
+
+      {/* Stats */}
+      <Reveal>
+        <div class="mb-16 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {
+            stats.map((s) => (
+              <div class="card-surface rounded-2xl p-5 text-center">
+                <span class="tabular-nums font-serif text-[1.75rem] font-medium leading-none tracking-tight text-white">
+                  {s.value}
+                </span>
+                <span class="ml-0.5 font-serif text-base italic text-accent-soft">{s.suffix}</span>
+                <span class="mt-2 block text-[11px] font-light leading-relaxed text-ink-400">{s.label}</span>
+              </div>
+            ))
+          }
+        </div>
+      </Reveal>
+
+      {/* Career Timeline */}
+      <Reveal><SectionHeader eyebrow="Journey" title="Timeline" /></Reveal>
+      <div class="relative border-l border-white/[0.08] pl-7">
+        {
+          about.timeline.map((item, i) => (
+            <Reveal delay={i * 0.1}>
+              <div class="relative mb-8 last:mb-0">
+                <div class="absolute -left-[calc(1.75rem+4px)] top-1.5 h-2 w-2 rounded-full border border-accent/60 bg-ink-900" />
+                <span class="mb-1.5 block font-mono text-[11px] tracking-wide text-accent-soft">{item.year}</span>
+                <h3 class="mb-0.5 font-serif text-lg font-medium tracking-tight text-white">{item.title}</h3>
+                <span class="mb-2 block font-mono text-[12px] text-ink-300">{item.org}</span>
+                <p class="text-[13px] font-light leading-relaxed text-ink-400">{item.description}</p>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+
+      {/* Resume CTA */}
+      <Reveal delay={0.2}>
+        <div class="mt-12">
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener"
+            class="btn-lift group inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-[13px] font-medium text-white transition-all duration-300 hover:border-white/30 hover:bg-white/[0.02]"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download Resume
+          </a>
+        </div>
+      </Reveal>
+    </div>
+  </main>
+</Layout>

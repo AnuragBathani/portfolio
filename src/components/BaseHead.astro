@@ -1,0 +1,48 @@
+---
+// Global <head>: meta, fonts, canonical, social. Imported by Layout.astro.
+import "@fontsource-variable/inter";
+import "@fontsource/playfair-display/400.css";
+import "@fontsource/playfair-display/400-italic.css";
+import "@fontsource/playfair-display/500.css";
+import "@fontsource/playfair-display/600.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+{/* Mark JS active before paint so reveal/fade hidden states only apply with JS. */}
+<script is:inline>
+  document.documentElement.classList.add("js");
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="canonical" href={canonical} />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="Anurag Bathani — Cybersecurity Blog"
+  href="/feed.xml"
+/>
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content="#08080a" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />

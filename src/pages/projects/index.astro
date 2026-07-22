@@ -1,0 +1,55 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import { projects } from "@/data/content";
+
+const [featured, ...rest] = projects;
+---
+
+<Layout title="Projects — Anurag Bathani" description="Security tools, full-stack applications, and systems built with a security-first mindset.">
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="container-x">
+      <Reveal>
+        <span class="eyebrow mb-4 block">03 — Projects</span>
+        <h1 class="mb-4 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          Projects
+        </h1>
+        <p class="lead mb-12 max-w-[60ch] text-[15px] font-light leading-relaxed text-ink-300">
+          Security tools, full-stack applications, and systems built with a
+          security-first mindset.
+        </p>
+      </Reveal>
+
+      {/* Featured project spans full width */}
+      <Reveal>
+        <div class="mb-5">
+          <ProjectCard project={featured} featured />
+        </div>
+      </Reveal>
+
+      {/* Remaining projects in a 2-col grid */}
+      <div class="grid gap-5 md:grid-cols-2">
+        {
+          rest.map((p, i) => (
+            <Reveal delay={i * 0.08}>
+              <ProjectCard project={p} />
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Card spotlight — track mouse position into CSS vars for the radial glow.
+  const cards = document.querySelectorAll<HTMLElement>("[data-spotlight]");
+  cards.forEach((card) => {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    });
+  });
+</script>

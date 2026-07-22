@@ -1,0 +1,16 @@
+---
+// Scroll-reveal wrapper. The actual observer lives in Layout's global script;
+// this just emits the markup + optional stagger delay.
+interface Props {
+  delay?: number; // seconds, to match the old API
+  class?: string;
+  as?: string;
+}
+const { delay = 0, class: className = "", as = "div" } = Astro.props as Props;
+const Tag = as as any;
+const style = delay ? `--r-delay:${Math.round(delay * 1000)}ms` : undefined;
+---
+
+<Tag class:list={["reveal", className]} style={style}>
+  <slot />
+</Tag>

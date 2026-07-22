@@ -1,0 +1,74 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Reveal from "@/components/Reveal.astro";
+import SkillTile from "@/components/SkillTile.astro";
+import { skills } from "@/data/content";
+import { categoryIcons } from "@/lib/skillIcons";
+---
+
+<Layout title="Skills — Anurag Bathani" description="Security, IAM, cloud, and engineering skills of Anurag Bathani.">
+  <main class="relative z-[2] min-h-screen pb-24 pt-32">
+    <div class="container-x">
+      <Reveal>
+        <span class="eyebrow mb-4 block">04 — Skills</span>
+        <h1 class="mb-4 font-serif text-display-lg font-medium tracking-tight text-balance text-white">
+          Skills
+        </h1>
+        <p class="lead mb-12 max-w-[60ch] text-[15px] font-light leading-relaxed text-ink-300">
+          The tools and disciplines I reach for — from offensive testing to
+          policy-as-code and the stacks I build on.
+        </p>
+      </Reveal>
+
+      <div class="grid gap-5 md:grid-cols-2">
+        {
+          skills.map((cat, catIdx) => (
+            <Reveal delay={catIdx * 0.08}>
+              <div class="card-surface group/card relative h-full overflow-hidden rounded-[20px]">
+                {/* Top accent line on hover */}
+                <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent opacity-0 transition-opacity duration-500 group-hover/card:opacity-100" />
+
+                {/* Terminal-style header */}
+                <div class="flex items-center gap-3 border-b border-white/[0.06] px-7 py-5">
+                  <div class="term-dots flex gap-1.5">
+                    <span class="h-2 w-2 rounded-full bg-white/[0.08] transition-colors duration-500" />
+                    <span class="h-2 w-2 rounded-full bg-white/[0.08] transition-colors duration-500" />
+                    <span class="h-2 w-2 rounded-full bg-white/[0.08] transition-colors duration-500" />
+                  </div>
+                  <div
+                    class="ml-1 flex items-center gap-2 text-ink-300 opacity-80 [&>svg]:h-[18px] [&>svg]:w-[18px]"
+                    set:html={categoryIcons[cat.icon]}
+                  />
+                  <h3 class="font-mono text-[13px] font-medium tracking-wide text-ink-200">
+                    {cat.category}
+                  </h3>
+                </div>
+
+                {/* Icon grid */}
+                <div class="flex flex-wrap gap-3 p-6 pb-8">
+                  {cat.tags.map((tag) => (
+                    <SkillTile name={tag} />
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* Terminal dots glow green when their card is hovered — subtle hacker cue. */
+  .group\/card:hover .term-dots span:nth-child(1) {
+    background: #ff5f56;
+  }
+  .group\/card:hover .term-dots span:nth-child(2) {
+    background: #ffbd2e;
+  }
+  .group\/card:hover .term-dots span:nth-child(3) {
+    background: var(--term);
+    box-shadow: 0 0 8px rgba(61, 220, 132, 0.5);
+  }
+</style>

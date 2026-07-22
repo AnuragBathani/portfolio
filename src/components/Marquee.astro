@@ -1,0 +1,30 @@
+---
+import { marqueeItems } from "@/data/content";
+// Seamless CSS marquee — the list is duplicated so the -50% translate loops
+// without a visible seam. No traveling-pulse highlight (that was a cliché).
+const items = [...marqueeItems, ...marqueeItems];
+---
+
+<section class="relative overflow-hidden border-y border-white/[0.06] py-12">
+  <div class="marquee-flow flex w-max items-center gap-10 whitespace-nowrap">
+    {
+      items.map((item) => (
+        <span class="flex items-center gap-10">
+          <span class="font-serif text-lg italic tracking-tight text-ink-300">
+            {item}
+          </span>
+          <span class="h-1 w-1 rounded-full bg-accent/60" aria-hidden="true" />
+        </span>
+      ))
+    }
+  </div>
+  <!-- edge fades -->
+  <div
+    class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-ink-950 to-transparent"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-ink-950 to-transparent"
+  >
+  </div>
+</section>

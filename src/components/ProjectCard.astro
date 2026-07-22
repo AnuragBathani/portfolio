@@ -1,0 +1,87 @@
+---
+import ArrowIcon from "@/components/ArrowIcon.astro";
+
+interface Project {
+  slug: string;
+  number: string;
+  title: string;
+  tags: string[];
+  description: string;
+}
+interface Props {
+  project: Project;
+  featured?: boolean;
+}
+const { project: p, featured = false } = Astro.props;
+---
+
+<a
+  href={`/projects/${p.slug}`}
+  data-spotlight
+  class:list={[
+    "card-surface card-spotlight card-rule group relative flex h-full flex-col rounded-2xl p-6 transition-transform duration-500 hover:-translate-y-1 md:p-7",
+    featured && "lg:flex-row lg:gap-10 lg:p-9",
+  ]}
+>
+  <div class:list={["flex flex-col", featured && "lg:w-[42%] lg:shrink-0"]}>
+    <div class="mb-5 flex items-center gap-3">
+      <span
+        class:list={[
+          "font-serif font-medium leading-none text-white/15",
+          featured ? "text-5xl" : "text-3xl",
+        ]}
+      >
+        {p.number}
+      </span>
+      {
+        featured && (
+          <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-accent-soft">
+            Featured
+          </span>
+        )
+      }
+    </div>
+
+    <h2
+      class:list={[
+        "mb-3 font-serif font-medium tracking-tight text-ink-100 transition-colors duration-300 group-hover:text-white",
+        featured ? "text-3xl lg:text-4xl" : "text-2xl",
+      ]}
+    >
+      {p.title}
+    </h2>
+  </div>
+
+  <div class="flex flex-1 flex-col">
+    <p
+      class:list={[
+        "mb-6 flex-1 font-light leading-relaxed text-ink-400",
+        featured ? "text-[15px]" : "text-sm",
+      ]}
+    >
+      {p.description}
+    </p>
+
+    <div class="mb-5 flex flex-wrap gap-1.5">
+      {
+        p.tags.map((t, i) => (
+          <span
+            class:list={[
+              "rounded-full border px-2.5 py-0.5 font-mono text-[10px] transition-colors duration-300",
+              i === 0
+                ? "border-accent/30 text-accent-soft"
+                : "border-white/[0.08] text-ink-400 group-hover:border-white/15 group-hover:text-ink-300",
+            ]}
+          >
+            {t}
+          </span>
+        ))
+      }
+    </div>
+
+    <div class="flex items-center gap-2 font-mono text-[13px] tracking-wide text-ink-400 transition-colors duration-300 group-hover:text-accent">
+      View Details
+      <ArrowIcon class="transition-transform duration-300 group-hover:translate-x-1" />
+    </div>
+  </div>
+</a>
